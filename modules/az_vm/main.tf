@@ -5,13 +5,16 @@ resource "azurerm_linux_virtual_machine" "virtualmachine" {
   resource_group_name   = var.resourcegroup
   network_interface_ids = var.nic
   size                  = var.vmsize # "Standard_ D2S_v3"
-  admin_username        = "azureuser"
+  admin_username        = "toor"
 
   source_image_reference {
-    publisher = "credativ"
-    offer     = "Debian"
-    sku       = "Diabian-11"
-    version   = "latest"
+    #publisher = "Debian"
+    #offer     = "debian-11"
+    #sku       = "11"
+    version   = "0.20220328.962"
+    publisher = "Debian"
+    offer     = "debian-11"
+    sku       = "11"
   }
 
   os_disk {
@@ -20,14 +23,11 @@ resource "azurerm_linux_virtual_machine" "virtualmachine" {
   }
 
   admin_ssh_key {
-    username   = "azureuser"
+    username   = "toor"
     public_key = var.publickey #tls_private_key.ssh.public_key_openssh
   }
 
-  tags = {
-    environment = "psti-prevenda"
-  }
-
+  tags = var.tags
 
 }
 
@@ -41,8 +41,8 @@ resource "azurerm_virtual_machine_extension" "customscripts" {
 
   settings = <<SETTINGS
     {
-        "fileUris": ["https://raw.githubusercontent.com/mysticrenji/k8s-using-kudeadm/main/script.sh"],
-        "commandToExecute": "sh script.sh"
+        "fileUris": ["https://raw.githubusercontent.com/rosthansilva/azure_kubeadm_multimaster_cluster/main/prepara-linux.sh"],
+        "commandToExecute": "sh prepara-linux.sh"
     }
 SETTINGS
   tags = var.tags
@@ -63,9 +63,9 @@ SETTINGS
 
 #    environment = {
 #      public_ip        = azurerm_linux_virtual_machine.virtualmachine.public_ip_address #"${element(azurerm_linux_virtual_machine.virtualmachine.*.public_ip_address, count.index)}"
-#      provisoner       = azurerm_linux_virtual_machine.virtualmachine.name == "psti-prevenda-master" ? "master-provisioner.yaml" : "slave-provisioner.yaml"
+#      provisoner       = azurerm_linux_virtual_machine.virtualmachine.name == "master" ? "master-provisioner.yaml" : "slave-provisioner.yaml"
 #     private_key_path = var.private_key_path
-#      user             = "azureuser"
+#      user             = "toor"
 #    }
 #  }
 #  depends_on = [azurerm_virtual_machine_extension.customscripts]
