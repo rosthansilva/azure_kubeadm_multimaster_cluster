@@ -33,7 +33,7 @@ resource "azurerm_linux_virtual_machine" "virtualmachine" {
 
 #Bootstrapping essential packages
 resource "azurerm_virtual_machine_extension" "customscripts" {
-  name                 = var.vmname
+  name                 = var.vmname == regexall(".*kube.*", var.vmname )
   virtual_machine_id   = azurerm_linux_virtual_machine.virtualmachine.id
   publisher            = "Microsoft.Azure.Extensions"
   type                 = "CustomScript"

@@ -13,10 +13,15 @@ variable "hub_vnet_name" {
 
 variable "vmname" {
   description = "Nome da VM"
-  type        = list(string)
+  type        = list(any)
   default     = ["kube-master-1", 
                  "kube-master-2", 
-                 "kube-master-3"]
+                 "kube-master-3",
+                 "kube-worker-1", 
+                 "kube-worker-2",
+                 "kube-worker-3",
+                 "ha-proxy-1"
+                 ]
 }
 
 variable "default_tags" {
