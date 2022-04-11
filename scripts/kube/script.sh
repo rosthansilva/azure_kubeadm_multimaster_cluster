@@ -1,4 +1,10 @@
 #!/bin/bash
+# Rosthan Silva 
+# Objetivo : Esse Scrip Prepara um node para ser parte de um cluster kubernetes.
+# Instala todas as dependenias, habilita Módulos do Karnel e deixa a máquina pronta para o init.
+# Container runtime : Cri-io
+# Versão do Kubeadm : Sempre a Ultima
+
 echo "Script De Provionamento"
 
 sudo apt update 

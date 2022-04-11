@@ -127,6 +127,6 @@ module "vm_module" {
   private_key_path = "~/.ssh/id_rsa"
   depends_on       = [azurerm_network_interface.nic]
   tags = var.default_tags
-  script_url = each.value == "kube-master-${each.key}" ? "${local.scripts.kube}" : "${local.scripts.haproxy}" #
+  script_url = each.value != "ha-proxy-${each.key}" ? "${local.scripts.kube}" : "${local.scripts.haproxy}" #
   script_name =  "script.sh"
 }
