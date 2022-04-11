@@ -12,7 +12,7 @@ variable "hub_vnet_name" {
 }
 
 variable "vmname" {
-  description = "Nome da VM"
+  description = "Nome das VMs - Kubernetes"
   type        = list(any)
   default     = ["kube-master-1", 
                  "kube-master-2", 
@@ -20,8 +20,16 @@ variable "vmname" {
                  "kube-worker-1", 
                  "kube-worker-2",
                  "kube-worker-3",
-                 "ha-proxy-1"
+                 "ha-proxy-1",
+                 "ha-proxy-2"
                  ]
+}
+
+locals {
+  scripts = {
+  kube = "https://raw.githubusercontent.com/rosthansilva/azure_kubeadm_multimaster_cluster/main/scripts/kube/script.sh"
+  haproxy = "https://raw.githubusercontent.com/rosthansilva/azure_kubeadm_multimaster_cluster/main/scripts/haproxy/script.sh"  
+  }
 }
 
 variable "default_tags" {

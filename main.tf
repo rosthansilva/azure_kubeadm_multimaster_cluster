@@ -114,7 +114,6 @@ resource "azurerm_public_ip" "publicip" {
   tags = var.default_tags
 }
 
-
 module "vm_module" {
   source           = "./modules/az_vm"
   for_each         = toset(var.vmname)
@@ -123,10 +122,11 @@ module "vm_module" {
   location         = azurerm_resource_group.kube.location
   nic              = [azurerm_network_interface.nic[each.key].id]
   publickey        = file("~/.ssh/id_rsa.pub")
-  vmsize           = each.value == "master-${each.key}" ? "Standard_D2s_v3" : "Standard_B2s" # "Standard_D2S_v3"
+  vmsize           = each.value == "kube-master-${each.key}" ? "Standard_D2s_v3" : "Standard_B2s" # "Standard_D2S_v3"
   public_ip        = [azurerm_public_ip.publicip[each.key].fqdn]
   private_key_path = "~/.ssh/id_rsa"
   depends_on       = [azurerm_network_interface.nic]
   tags = var.default_tags
+  script_url = each.value == "kube-master-${each.key}" ? "${local.scripts.kube}" : "${local.scripts.haproxy}" #
+  script_name =  "script.sh"
 }
-

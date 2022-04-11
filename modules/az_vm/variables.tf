@@ -11,3 +11,11 @@ variable "private_key_path" {}
 variable "tags" {
   
 }
+
+variable "script_name" {
+  
+}
+
+variable "script_url" {
+  
+}

@@ -33,7 +33,8 @@ resource "azurerm_linux_virtual_machine" "virtualmachine" {
 
 #Bootstrapping essential packages
 resource "azurerm_virtual_machine_extension" "customscripts" {
-  name                 = var.vmname == regexall(".*kube.*", var.vmname )
+  #name                 = var.vmname == regexall(".*kube.*", var.vmname )
+  name                 = var.vmname 
   virtual_machine_id   = azurerm_linux_virtual_machine.virtualmachine.id
   publisher            = "Microsoft.Azure.Extensions"
   type                 = "CustomScript"
@@ -41,8 +42,8 @@ resource "azurerm_virtual_machine_extension" "customscripts" {
 
   settings = <<SETTINGS
     {
-        "fileUris": ["https://raw.githubusercontent.com/rosthansilva/azure_kubeadm_multimaster_cluster/main/prepara-linux.sh"],
-        "commandToExecute": "sh prepara-linux.sh"
+        "fileUris": ["${var.script_url}"],
+        "commandToExecute": "sh ${var.script_name}"
     }
 SETTINGS
   tags = var.tags
