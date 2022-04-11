@@ -1,25 +1,25 @@
 variable "resource_group_name" {
-  description = "Resource Group name"
+  description = "Nome do grupo de recursos"
   type        = string
 }
 
 variable "location" {
-  description = "Location in which to deploy the network"
+  description = "Local para implantar a rede"
   type        = string
 }
 
 variable "vnet_name" {
-  description = "VNET name"
+  description = "Nome do vnet"
   type        = string
 }
 
 variable "address_space" {
-  description = "VNET address space"
+  description = "Espaço de endereço da vnet"
   type        = list(string)
 }
 
 variable "subnets" {
-  description = "Subnets configuration"
+  description = "Configuração das sub-redes"
   type = list(object({
     name             = string
     address_prefixes = list(string)
