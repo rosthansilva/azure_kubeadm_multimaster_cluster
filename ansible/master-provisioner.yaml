@@ -1,0 +1,47 @@
+---
+- hosts: all
+  become: true
+  tasks:
+
+  #- name: Copy Kubernets config files
+  #  copy: src={{ item.src }} dest={{ item.dest }}
+  #  with_items:
+  #  - { src: './kubeadm-init.yaml', dest: '/etc/kubernetes/' }
+  
+  - name: initialize the cluster
+    command: sudo kubeadm init \
+            --pod-network-cidr=10.10.0.0/16 \
+            --upload-certs \
+            --control-plane-endpoint=kube-master-1.k8s.local
+
+  - name: Create kubeconfig and set permission
+    shell: |
+      mkdir -p $HOME/.kube
+      sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+      sudo chown $(id -u):$(id -g) $HOME/.kube/config
+    become: false
+
+# Step 2.6: Generate kube join command for joining the node to the Kubernetes cluster and store the command in the file named join-command.
+  - name: Generate join command
+    command: kubeadm token create --print-join-command
+    register: join_command
+
+  - debug:
+      msg: "{{ join_command }}"
+
+  - name: Copy join command to local file
+    #changedthis
+    become: no
+    local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./join-command"
+    
+  handlers:
+    - name: cry-o status
+      service: name=cri-o state=started
+    
+    - name: kubelet status
+      service: name=kubelet state=started
+    
+    - name: docker status
+      service: name=kubelet state=started
+        
+        

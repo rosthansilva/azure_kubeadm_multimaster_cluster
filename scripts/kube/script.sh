@@ -1,10 +1,4 @@
 #!/bin/bash
-# Rosthan Silva 
-# Objetivo : Esse Scrip Prepara um node para ser parte de um cluster kubernetes.
-# Instala todas as dependenias, habilita Módulos do Karnel e deixa a máquina pronta para o init.
-# Container runtime : Cri-io
-# Versão do Kubeadm : Sempre a Ultima
-
 echo "Script De Provionamento"
 
 sudo apt update 
@@ -15,10 +9,18 @@ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
 echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
 sudo apt update
-sudo apt -y install vim git curl wget kubelet kubeadm kubectl containerd;
+apt-get install -y vim git curl kubelet=1.23.5-00 kubeadm=1.23.5-00 kubectl=1.23.5-00 
+
+apt install -y iptables libiptc0/stable libxtables12/stable 
+
 
 sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 sudo swapoff -a
+
+cat << EOF | sudo tee /etc/modules-load.d/containerd.conf
+overlay
+br_netfilter
+EOF 
 
 sudo modprobe overlay
 sudo modprobe br_netfilter
@@ -31,21 +33,26 @@ EOF
 
 sudo sysctl --system
 
-OS=Debian_10
-VERSION=1.22
+apt install -y chrony
 
-echo "deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/$OS/ /" > /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list
-echo "deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/$VERSION/$OS/ /" > /etc/apt/sources.list.d/devel:kubic:libcontainers:stable:cri-o:$VERSION.list
+apt install nfs-common -y
 
-curl -L https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:$VERSION/$OS/Release.key | apt-key add -
-curl -L https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/$OS/Release.key | apt-key add -
+apt install -y curl gpg lsb-release apparmor apparmor-utils  -y 
 
-sudo apt update
-sudo apt install cri-o cri-o-runc -y
+curl -fsSL https://download.docker.com/linux/debian/gpg | \
+sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg 
 
-sudo apt-cache policy cri-o ; sleep 3
 
-sudo systemctl daemon-reload
-sudo systemctl enable crio --now
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] \ https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null 
 
-sudo apt-mark hold kubelet kubeadm kubectl cri-o cri-o-runc 
+apt update 
+
+apt-get install -y containerd.io 
+
+mkdir -p /etc/containerd
+
+containerd config default | tee /etc/containerd/config.toml 
+
+systemctl restart containerd
+
+sudo apt-mark hold kubelet kubeadm kubectl containerd 
