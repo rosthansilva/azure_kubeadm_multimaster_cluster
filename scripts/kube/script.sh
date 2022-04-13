@@ -33,27 +33,26 @@ EOF
 
 sudo sysctl --system
 
-apt install -y chrony
+sudo apt install -y chrony
 
-apt install nfs-common -y
+sudo apt install nfs-common -y
 
-apt install -y curl gpg lsb-release apparmor apparmor-utils  -y 
+sudo apt install -y curl gnupg2 software-properties-common apt-transport-https ca-certificates
 
-curl -fsSL https://download.docker.com/linux/debian/gpg | \
-sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg 
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add
+#sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg 
 
-
-sudo echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] \ 
-https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null 
+sudo echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" >> /etc/apt/sources.list
 
 sudo apt update 
 
-sudo apt-get install -y containerd
+sudo apt install -y containerd.io
 
 mkdir -p /etc/containerd
 
-containerd config default | tee /etc/containerd/config.toml 
+containerd config default > /etc/containerd/config.toml
 
-systemctl restart containerd
+sudo systemctl restart containerd
+sudo systemctl enable containerd
 
-sudo apt-mark hold kubelet kubeadm kubectl containerd 
+sudo apt-mark hold kubelet kubeadm kubectl containerd.io 
