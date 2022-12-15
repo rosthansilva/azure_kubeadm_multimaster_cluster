@@ -39,7 +39,7 @@ variable "default_tags" {
     Administrator      = "Rosthan Silva"
     Department         = "DevOps"
     CostCentre         = "HTD"
-    ContactPerson      = "rosthan.silva@Sinqia.com.br"
+    ContactPerson      = "rosthan.silva"
     ManagedByTerraform = "True"
   }
 }
